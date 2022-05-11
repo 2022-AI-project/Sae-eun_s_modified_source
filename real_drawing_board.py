@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import *
 from datetime import datetime
 from classification import classification
 from Fill_color import Fill_color
+import copy
 import cv2
 
 from PyQt5.QtWidgets import QMessageBox
@@ -14,6 +15,7 @@ class drawing_board(QWidget):
         super().__init__()
         QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)  # 화면크기스케일링
         self.file = ''
+        self.file2 = ''
 
         # 전체 폼 박스
         formbox = QHBoxLayout()
@@ -182,15 +184,37 @@ class drawing_board(QWidget):
         reply = self.msg_box('\"'+ label +'\"을 그린 게 맞다면 \"OK\" 버튼을, 다시 그리고 싶다면 \"NO\" 버튼을 눌러주세요.')
         if reply == True:
             self.lbl_img.hide()  # 전 이미지 숨김
-            fill = Fill_color(self.file, label)    #이미지 색칠
-            self.file = fill.file
+            if label == "apple":
+                self.file2 = copy.copy(self.file)
+                fill = Fill_color(self.file, label, 1)    #이미지 색칠
+                self.file = fill.file
             # print(self.file)
 
-            pixmap = QPixmap(self.file)  # jpg 는 안되는데 왜 안되는 지 아직 모르겠다..
+                pixmap = QPixmap(self.file)  # jpg 는 안되는데 왜 안되는 지 아직 모르겠다..
 
-            self.lbl_img = QLabel()
-            self.lbl_img.setPixmap(pixmap)
-            self.right2.addWidget(self.lbl_img)
+                self.lbl_img = QLabel()
+                self.lbl_img.setPixmap(pixmap)
+                self.right2.addWidget(self.lbl_img)
+
+                fill = Fill_color(self.file2, label, 2)    #이미지 색칠
+                self.file2 = fill.file
+                # print(self.file)
+
+                pixmap = QPixmap(self.file2)  # jpg 는 안되는데 왜 안되는 지 아직 모르겠다..
+
+                self.lbl_img = QLabel()
+                self.lbl_img.setPixmap(pixmap)
+                self.right2.addWidget(self.lbl_img)
+            else:
+                fill = Fill_color(self.file, label, 1)    #이미지 색칠
+                self.file = fill.file
+            # print(self.file)
+
+                pixmap = QPixmap(self.file)  # jpg 는 안되는데 왜 안되는 지 아직 모르겠다..
+
+                self.lbl_img = QLabel()
+                self.lbl_img.setPixmap(pixmap)
+                self.right2.addWidget(self.lbl_img)
 
     def msg_box(self, text):
         msgBox = QMessageBox()
