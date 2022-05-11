@@ -10,7 +10,7 @@ class make_model():
     def make_npy_file(self):
         caltech_dir = "./multi_img_data/imgs_others/train"
 
-        categories = ["apple", "cherry", "tomato", "flower", "avocado", "leaf", "carrot", "shellfish"]
+        categories = ["apple", "carrot", "melon", "strawberry", "tomato", "watermelon"]
         nb_classes = len(categories)
         print(nb_classes)
 
@@ -71,7 +71,7 @@ class make_model():
         print(X_train.shape[0])
 
 
-        categories = ["apple", "cherry", "tomato", "flower", "avocado", "leaf", "carrot", "shellfish"]
+        categories = ["apple", "carrot", "melon", "strawberry", "tomato", "watermelon"]
         nb_classes = len(categories)
 
         X_train = X_train.astype(float) / 255
@@ -112,15 +112,28 @@ class make_model():
 
         y_vloss = history.history['val_loss']
         y_loss = history.history['loss']
+        
+        y_vacc = history.history['val_accuracy']
+        y_acc = history.history['accuracy']
 
         x_len = np.arange(len(y_loss))
 
+        plt.figure(1)
         plt.plot(x_len, y_vloss, marker='.', c='red', label='val_set_loss')
         plt.plot(x_len, y_loss, marker='.', c='blue', label='train_set_loss')
         plt.legend()
         plt.xlabel('epochs')
         plt.ylabel('loss')
         plt.grid()
+        
+        plt.figure(2)
+        plt.plot(x_len, y_vacc, marker='.', c='red', label='val_set_acc')
+        plt.plot(x_len, y_acc, marker='.', c='blue', label='train_set_acc')
+        plt.legend()
+        plt.xlabel('epochs')
+        plt.ylabel('accuracy')
+        plt.grid()
+        
         plt.show()
         
 if __name__ == '__main__':
