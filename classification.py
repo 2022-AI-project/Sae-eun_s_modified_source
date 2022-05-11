@@ -41,34 +41,30 @@ class classification():
             pre_ans = i.argmax()  # 예측레이블
             pre_ans_str = ''
             if pre_ans == 0: pre_ans_str = "사과"
-            elif pre_ans == 1: pre_ans_str = "체리"
-            elif pre_ans == 2: pre_ans_str = "토마토"
-            elif pre_ans == 3: pre_ans_str = "꽃"
-            elif pre_ans == 4: pre_ans_str = "나뭇잎"
-            elif pre_ans == 5: pre_ans_str = "당근"
-            elif pre_ans == 6: pre_ans_str = "조개"
+            elif pre_ans == 1: pre_ans_str = "당근"
+            elif pre_ans == 2: pre_ans_str = "참외"
+            elif pre_ans == 3: pre_ans_str = "딸기"
+            elif pre_ans == 4: pre_ans_str = "토마토"
+            elif pre_ans == 5: pre_ans_str = "수박"
 
             if i[0] >= 0.8:
                 # print("해당 " + filenames[cnt].split("\\")[1] + "이미지는 " + pre_ans_str + "으로 추정됩니다.")
                 self.label = 'apple'
             elif i[1] >= 0.8:
                 # print("해당 " + filenames[cnt].split("\\")[1] + "이미지는 " + pre_ans_str + "으로 추정됩니다.")
-                self.label = 'cherry'
+                self.label = 'carrot'
             elif i[2] >= 0.8:
                 # print("해당 " + filenames[cnt].split("\\")[1] + "이미지는 " + pre_ans_str + "으로 추정됩니다.")
-                self.label = 'tomato'
+                self.label = 'melon'
             elif i[3] >= 0.8:
                 # print("해당 " + filenames[cnt].split("\\")[1] + "이미지는 " + pre_ans_str + "으로 추정됩니다.")
-                self.label = 'flower'
+                self.label = 'strawberry'
             elif i[4] >= 0.8:
                 # print("해당 " + filenames[cnt].split("\\")[1] + "이미지는 " + pre_ans_str + "으로 추정됩니다.")
-                self.label = 'leaf'
+                self.label = 'tomato'
             elif i[5] >= 0.8:
                 # print("해당 " + filenames[cnt].split("\\")[1] + "이미지는 " + pre_ans_str + "으로 추정됩니다.")
-                self.label = 'carrot'
-            elif i[6] >= 0.8:
-                # print("해당 " + filenames[cnt].split("\\")[1] + "이미지는 " + pre_ans_str + "으로 추정됩니다.")
-                self.label = 'shellfish'
+                self.label = 'watermelon'
             else:
                 print("해당 이미지는 없는 데이터입니다.")
                 self.label = 'none'
