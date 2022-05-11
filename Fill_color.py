@@ -6,11 +6,11 @@ import math
 
 
 class Fill_color(object):
-    def __init__(self, filename, label):
+    def __init__(self, filename, label, cnt):
         self.file = ''
-        self.start(filename, label)
+        self.start(filename, label, cnt)
 
-    def start(self, file_name, label):
+    def start(self, file_name, label, cnt):
         origin_img = cv2.imread(file_name)
         if origin_img is None:
             print('====================== error - not found : ' + file_name + '======================')
@@ -18,9 +18,9 @@ class Fill_color(object):
 
         gray_img = cv2.imread(file_name,0)
         bin_img = self.binarize(gray_img, 250)
-        print(bin_img)
+        
         sg_img , count = self.segmentation(bin_img)
-        result = self.segmentation_image_show(origin_img,sg_img, label, count)
+        result = self.segmentation_image_show(origin_img,sg_img, label, count, cnt)
         result = self.line_effect(sg_img, result, 7, 10)
         result = self.natual_coloring(result, 80)
         result = cv2.GaussianBlur(result, (3, 3), 0)
@@ -38,9 +38,6 @@ class Fill_color(object):
         count = 0
         start_point = []
         
-        print(len(img))
-        print(len(img[0]))
-
         for i in range(len(img)):
             for j in range(len(img[0])):
                 if segmentation_img[i][j] == 255:
@@ -63,90 +60,26 @@ class Fill_color(object):
                                 q.append([x + offset[i][0], y + offset[i][1]])  # dfs 인듯?
         return [segmentation_img, count]
 
-    def segmentation_image_show(self,origin_img, segmentation_img , label, count):
+
+    def segmentation_image_show(self,origin_img, segmentation_img , label, count, cnt):
         color_img = copy.deepcopy(origin_img)
         # print(count) # 세그먼트 개수 출력
         # [4,2,173] # 체리색
-        dic_label = {"apple":"사과","cherry":"체리","tomato":"토마토","flower":"꽃","leaf":"잎","shellfish":"조개","carrot":"당근"}
+        dic_label = {"apple":"사과","carrot":"당근","melon":"참외","strawberry":"딸기","tomato":"토마토","watermelon":"수박"}
 
         print('\n\n=== 해당 이미지는 '+dic_label[label]+'(으)로 추정됩니다 === ')
         color_count = self.return_size(copy.deepcopy(segmentation_img),20)
+        
+        # !!!!!!!!!여기 수정해야함!!!!!!!!!!
         if label == 'apple':
             # 사과
-            color = [0,0,180]
+            if cnt==1: color = [0,0,180]
+            elif cnt ==2:color = [20,160,20]
             for i in range(len(segmentation_img)):
-                for j in range(len(segmentation_img[0])):
-                    if segmentation_img[i][j] == color_count[0]:
-                        color_img[i][j] = color
-        elif label == 'cherry':
-            # 체리
-            color = [4,2,173]
-            start_point = 0
-            black_list = []
-            if count >= 3:
-                for i in range(len(segmentation_img)):
-                    check = False
                     for j in range(len(segmentation_img[0])):
-                        if segmentation_img[i][j] == 0:
-                            start_point = i
-                            # print(start_point)
-                            check = True
-                            break
-                    if check:
-                        break
-
-            for seg_cnt in range(count - 1):
-                for i in range(start_point, len(segmentation_img)):
-                    for j in range(len(segmentation_img[0])):
-                        if segmentation_img[i][j] == color_count[seg_cnt]:
-                            black_list_check = True
-                            # 블랙리스트 추가 조건
-                            if start_point + 50 > i:
-                                if not (segmentation_img[i][j] in black_list):
-                                    black_list.append(segmentation_img[i][j])
-                            # 블랙리스트면 색칠하지 않음
-                            for k in range(len(black_list)):
-                                if segmentation_img[i][j] == black_list[k]:
-                                    black_list_check = False
-                            if black_list_check:
-                                color_img[i][j] = color
-        elif label == 'tomato':
-            # 토마토
-            color = [[0,0,180],[0,100,0]]
-            for seg_cnt in range(count - 1):
-                for i in range(len(segmentation_img)):
-                    for j in range(len(segmentation_img[0])):
-                        if segmentation_img[i][j] == color_count[seg_cnt]:
-                            if seg_cnt == 0:
-                                color_img[i][j] = color[0]
-                            else:
-                                color_img[i][j] = color[1]
-        elif label == 'flower':
-            # 꽃
-            center_circle = segmentation_img[150][150]
-            color = [20,220,220]
-            for seg_cnt in range(count - 1):
-                for i in range(len(segmentation_img)):
-                    for j in range(len(segmentation_img[0])):
-                        if segmentation_img[i][j] == center_circle:
-                            color_img[i][j] = [50,50,180]
-                        elif segmentation_img[i][j] == color_count[seg_cnt]:
-                            color_img[i][j] = color
-
-        elif label == 'leaf':
-            # 잎
-            color = [20,160,20]
-            for i in range(len(segmentation_img)):
-                for j in range(len(segmentation_img[0])):
-                    if segmentation_img[i][j] != 0 and segmentation_img[i][j] != 255 and segmentation_img[i][j] != 1:
-                        color_img[i][j] = color
-        elif label == 'shellfish':
-            # 조개
-            color = [200,200,200]
-            for i in range(len(segmentation_img)):
-                for j in range(len(segmentation_img[0])):
-                    if segmentation_img[i][j] != 0 and segmentation_img[i][j] != 255 and segmentation_img[i][j] != 1:
-                        color_img[i][j] = color
+                        if segmentation_img[i][j] == color_count[0]:
+                            color_img[i][j] = color 
+        
         elif label == 'carrot':
             # 당근
             color = [[38,67,243],[10,180,10]]
@@ -158,6 +91,43 @@ class Fill_color(object):
                                 color_img[i][j] = color[-1]
                             else:
                                 color_img[i][j] = color[seg_cnt]
+        elif label == 'melon':
+            # 참외
+            color = [0,220,220]
+            for i in range(len(segmentation_img)):
+                for j in range(len(segmentation_img[0])):
+                    if segmentation_img[i][j] != 0 and segmentation_img[i][j] != 255 and segmentation_img[i][j] != 1:
+                        color_img[i][j] = color
+        elif label == 'strawberry':
+            # 딸기
+            color = [[54,54,255],[10,180,10]]
+            for seg_cnt in range(count - 1):
+                for i in range(len(segmentation_img)):
+                    for j in range(len(segmentation_img[0])):
+                        if segmentation_img[i][j] == color_count[seg_cnt]:
+                            if len(color)-1 <= seg_cnt:
+                                color_img[i][j] = color[-1]
+                            else:
+                                color_img[i][j] = color[seg_cnt]
+
+        elif label == 'tomato':
+            # 토마토
+            color = [[0,0,180],[0,100,0]]
+            for seg_cnt in range(count - 1):
+                for i in range(len(segmentation_img)):
+                    for j in range(len(segmentation_img[0])):
+                        if segmentation_img[i][j] == color_count[seg_cnt]:
+                            if seg_cnt == 0:
+                                color_img[i][j] = color[0]
+                            else:
+                                color_img[i][j] = color[1]
+        elif label == 'watermelon':
+            # 수박
+            color = [20,160,20]
+            for i in range(len(segmentation_img)):
+                for j in range(len(segmentation_img[0])):
+                    if segmentation_img[i][j] != 0 and segmentation_img[i][j] != 255 and segmentation_img[i][j] != 1:
+                        color_img[i][j] = color
         return color_img
 
     def return_size(self,img, return_num):
