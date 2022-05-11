@@ -124,10 +124,35 @@ class Fill_color(object):
         elif label == 'watermelon':
             # 수박
             color = [20,160,20]
-            for i in range(len(segmentation_img)):
-                for j in range(len(segmentation_img[0])):
-                    if segmentation_img[i][j] != 0 and segmentation_img[i][j] != 255 and segmentation_img[i][j] != 1:
-                        color_img[i][j] = color
+            start_point = 0
+            black_list = []
+            if count >= 3:
+                for i in range(len(segmentation_img)):
+                    check = False
+                    for j in range(len(segmentation_img[0])):
+                        if segmentation_img[i][j] == 0:
+                            start_point = i
+                            # print(start_point)
+                            check = True
+                            break
+                    if check:
+                        break
+
+            for seg_cnt in range(count - 1):
+                for i in range(start_point, len(segmentation_img)):
+                    for j in range(len(segmentation_img[0])):
+                        if segmentation_img[i][j] == color_count[seg_cnt]:
+                            black_list_check = True
+                            # 블랙리스트 추가 조건
+                            if start_point + 50 > i:
+                                if not (segmentation_img[i][j] in black_list):
+                                    black_list.append(segmentation_img[i][j])
+                            # 블랙리스트면 색칠하지 않음
+                            for k in range(len(black_list)):
+                                if segmentation_img[i][j] == black_list[k]:
+                                    black_list_check = False
+                            if black_list_check:
+                                color_img[i][j] = color
         return color_img
 
     def return_size(self,img, return_num):
