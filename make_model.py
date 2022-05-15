@@ -14,8 +14,8 @@ class make_model():
         nb_classes = len(categories)
         print(nb_classes)
 
-        image_w = 64
-        image_h = 64
+        image_w = 256
+        image_h = 256
 
         pixels = image_h * image_w * 3
 
@@ -34,11 +34,14 @@ class make_model():
                 img = Image.open(f)
                 img = img.convert("RGB")
                 img = img.resize((image_w, image_h))
-                data = np.asarray(img)
-
-                X.append(data)
-                y.append(label)
-
+                
+                white=(255, 255, 255)
+                for j in range(-1, 2):
+                    globals()['dst'+str(j+3)]=img.rotate(10*j, expand=1, fillcolor=white)
+                    globals()['data'+str(j+3)]=np.asarray(globals()['dst'+str(j+3)])
+                    X.append(globals()['data'+str(j+3)])
+                    y.append(label)
+                
                 if i % 700 == 0:
                     print(cat, " : ", f)
 
@@ -49,10 +52,8 @@ class make_model():
 
         X_train, X_test, y_train, y_test = train_test_split(X, y)
         xy = (X_train, X_test, y_train, y_test)
-        
+        print(len(y))
         np.save("./numpy_data/multi_image_data.npy", xy)
-
-        print("ok", len(y))
 
     def make_model(self):
         from keras.models import Sequential
