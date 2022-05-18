@@ -1,5 +1,6 @@
 from PIL import Image
 import os, glob, numpy as np
+import matplotlib.pyplot as plt
 from keras.models import load_model
 import cv2
 
@@ -12,8 +13,8 @@ class classification():
     def classify(self):
         caltech_dir = "./multi_img_data/imgs_others_test_sketch"
 
-        image_w = 64
-        image_h = 64
+        image_w = 128
+        image_h = 128
 
         pixels = image_h * image_w * 3
 
@@ -27,7 +28,9 @@ class classification():
             data = np.asarray(img)
             filenames.append(f)
             X.append(data)
-
+        plt.imshow(img)             # Resized image 를 출력
+        plt.title("Resized Image")
+        plt.show()
         X = np.array(X)
         model = load_model('./model/multi_img_classification.model')
 
