@@ -1,21 +1,55 @@
 from PIL import Image
 import os, glob, numpy as np
+from numpy import ndarray as nda
 from sklearn.model_selection import train_test_split
 
 class make_model():
     def __init__(self):
+        self.image_rotate()
         self.make_npy_file()
         self.make_model()
+
+    def image_rotate(self):
+        caltech_dir = "./multi_img_data/imgs_others/train"
+
+        categories = ["apple", "carrot", "melon", "strawberry", "tomato", "watermelon"]
+        nb_classes = len(categories)
+
+        image_w = 128
+        image_h = 128
+
+        for idx, cat in enumerate(categories):
+            # one-hot 돌리기.
+            label = [0 for i in range(nb_classes)]
+            label[idx] = 1
+
+            image_dir = caltech_dir + "/" + cat
+            files = glob.glob(image_dir + "/*.png")
+            print(cat, " 파일 길이 : ", len(files))
+            for i, f in enumerate(files):
+                img = Image.open(f)
+                img = img.convert("RGB")
+                img = img.resize((image_w, image_h))
+                white=(255, 255, 255)
+                for j in range(-3, 4):
+                    img_name=f.split('.')
+                    img_ro=img.rotate(10*j, expand=1, fillcolor=white)
+                    img_ro=img_ro.crop((img_ro.size[0]/2-image_w/2, img_ro.size[1]/2-image_h/2, img_ro.size[0]/2+image_w/2, img_ro.size[1]/2+image_h/2))
+                    save_dir='.'+img_name[1]+"-"+str(j+4)+".png"
+                    img_ro.save(save_dir)
+                    
+                
+                if i % 700 == 0:
+                    print(cat, " : ", f)
 
     def make_npy_file(self):
         caltech_dir = "./multi_img_data/imgs_others/train"
 
         categories = ["apple", "carrot", "melon", "strawberry", "tomato", "watermelon"]
         nb_classes = len(categories)
-        print(nb_classes)
 
-        image_w = 256
-        image_h = 256
+        image_w = 128
+        image_h = 128
 
         pixels = image_h * image_w * 3
 
@@ -34,17 +68,14 @@ class make_model():
                 img = Image.open(f)
                 img = img.convert("RGB")
                 img = img.resize((image_w, image_h))
-                
-                white=(255, 255, 255)
-                for j in range(-1, 2):
-                    globals()['dst'+str(j+3)]=img.rotate(10*j, expand=1, fillcolor=white)
-                    globals()['data'+str(j+3)]=np.asarray(globals()['dst'+str(j+3)])
-                    X.append(globals()['data'+str(j+3)])
-                    y.append(label)
+                data=np.asarray(img)
+               
+                X.append(data)
+                y.append(label)
                 
                 if i % 700 == 0:
                     print(cat, " : ", f)
-
+        
         X = np.array(X)
         y = np.array(y)
         # 1 0 0 0 이면 airplanes
@@ -68,13 +99,10 @@ class make_model():
         session = tf.compat.v1.Session(config=config)
 
         X_train, X_test, y_train, y_test = np.load("./numpy_data/multi_image_data.npy")
-        print(X_train.shape)
-        print(X_train.shape[0])
-
-
+        
         categories = ["apple", "carrot", "melon", "strawberry", "tomato", "watermelon"]
         nb_classes = len(categories)
-
+        #print(X_train)
         X_train = X_train.astype(float) / 255
         X_test = X_test.astype(float) / 255
 
