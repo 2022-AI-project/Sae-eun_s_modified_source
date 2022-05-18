@@ -20,7 +20,7 @@ class Fill_color(object):
         bin_img = self.binarize(gray_img, 250)
         
         sg_img , count = self.segmentation(bin_img)
-        result = self.segmentation_image_show(origin_img,sg_img, label, count, cnt)
+        result = self.segmentation_image_show(origin_img, sg_img, label, count, cnt)
         result = self.line_effect(sg_img, result, 7, 10)
         result = self.natual_coloring(result, 80)
         result = cv2.GaussianBlur(result, (3, 3), 0)
@@ -67,7 +67,8 @@ class Fill_color(object):
         # [4,2,173] # 체리색
         dic_label = {"apple":"사과","carrot":"당근","melon":"참외","strawberry":"딸기","tomato":"토마토","watermelon":"수박"}
 
-        print('\n\n=== 해당 이미지는 '+dic_label[label]+'(으)로 추정됩니다 === ')
+        if cnt==1:  # 여러개의 색이 filling 되는 경우 한 번만 추정 label 을 출력
+            print('\n\n=== 해당 이미지는 '+dic_label[label]+'(으)로 추정됩니다 === ')
         color_count = self.return_size(copy.deepcopy(segmentation_img),20)
         
         # !!!!!!!!!여기 수정해야함!!!!!!!!!!
