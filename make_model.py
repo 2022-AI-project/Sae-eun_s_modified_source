@@ -5,24 +5,18 @@ from sklearn.model_selection import train_test_split
 
 class make_model():
     def __init__(self):
-        self.image_rotate()
+        self.image_rotate() # 전처리 완료 시 생략 
         self.make_npy_file()
         self.make_model()
 
     def image_rotate(self):
         caltech_dir = "./multi_img_data/imgs_others/train"
-
         categories = ["apple", "carrot", "melon", "strawberry", "tomato", "watermelon"]
-        nb_classes = len(categories)
-
+        
         image_w = 128
         image_h = 128
 
         for idx, cat in enumerate(categories):
-            # one-hot 돌리기.
-            label = [0 for i in range(nb_classes)]
-            label[idx] = 1
-
             image_dir = caltech_dir + "/" + cat
             files = glob.glob(image_dir + "/*.png")
             print(cat, " 파일 길이 : ", len(files))
@@ -37,7 +31,6 @@ class make_model():
                     img_ro=img_ro.crop((img_ro.size[0]/2-image_w/2, img_ro.size[1]/2-image_h/2, img_ro.size[0]/2+image_w/2, img_ro.size[1]/2+image_h/2))
                     save_dir='.'+img_name[1]+"-"+str(j+4)+".png"
                     img_ro.save(save_dir)
-                    
                 
                 if i % 700 == 0:
                     print(cat, " : ", f)
@@ -102,7 +95,7 @@ class make_model():
         
         categories = ["apple", "carrot", "melon", "strawberry", "tomato", "watermelon"]
         nb_classes = len(categories)
-        #print(X_train)
+        
         X_train = X_train.astype(float) / 255
         X_test = X_test.astype(float) / 255
 
@@ -134,8 +127,8 @@ class make_model():
 
         model.summary()
 
-        history = model.fit(X_train, y_train, batch_size=32, epochs=50, validation_data=(X_test, y_test), callbacks=[checkpoint, early_stopping])
-
+        history = model.fit(X_train, y_train, batch_size=128, epochs=50, validation_data=(X_test, y_test), callbacks=[checkpoint, early_stopping])
+        # batch_size, epochs 조절해가면서 변화 확인
         print("정확도 : %.4f" % (model.evaluate(X_test, y_test)[1]))
 
 
