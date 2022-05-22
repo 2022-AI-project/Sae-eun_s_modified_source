@@ -5,12 +5,13 @@ from sklearn.model_selection import train_test_split
 
 class make_model():
     def __init__(self):
-        self.image_rotate() # 전처리 완료 시 생략 
-        self.make_npy_file()
+        #self.image_rotate()
+        #self.make_npy_file()
         self.make_model()
 
     def image_rotate(self):
         caltech_dir = "./multi_img_data/imgs_others/train"
+        saving_dir = "./multi_img_data/imgs_others/train_rotated"
         categories = ["apple", "carrot", "melon", "strawberry", "tomato", "watermelon"]
         
         image_w = 128
@@ -25,18 +26,20 @@ class make_model():
                 img = img.convert("RGB")
                 img = img.resize((image_w, image_h))
                 white=(255, 255, 255)
-                for j in range(-3, 4):
+                for j in range(-9, 9):
                     img_name=f.split('.')
-                    img_ro=img.rotate(10*j, expand=1, fillcolor=white)
+                    img_name = img_name[1].split("\\")
+                    img_ro=img.rotate(20*j, expand=1, fillcolor=white)
                     img_ro=img_ro.crop((img_ro.size[0]/2-image_w/2, img_ro.size[1]/2-image_h/2, img_ro.size[0]/2+image_w/2, img_ro.size[1]/2+image_h/2))
-                    save_dir='.'+img_name[1]+"-"+str(j+4)+".png"
+                    save_dir=saving_dir + "/" + cat + "/" + img_name[1]+"_"+str(j+10)+".png"
                     img_ro.save(save_dir)
                 
                 if i % 700 == 0:
                     print(cat, " : ", f)
+        print("전처리 완료\n")
 
     def make_npy_file(self):
-        caltech_dir = "./multi_img_data/imgs_others/train"
+        caltech_dir = "./multi_img_data/imgs_others/train_rotated"
 
         categories = ["apple", "carrot", "melon", "strawberry", "tomato", "watermelon"]
         nb_classes = len(categories)
@@ -95,7 +98,6 @@ class make_model():
         
         categories = ["apple", "carrot", "melon", "strawberry", "tomato", "watermelon"]
         nb_classes = len(categories)
-        
         X_train = X_train.astype(float) / 255
         X_test = X_test.astype(float) / 255
 
@@ -127,8 +129,8 @@ class make_model():
 
         model.summary()
 
-        history = model.fit(X_train, y_train, batch_size=128, epochs=50, validation_data=(X_test, y_test), callbacks=[checkpoint, early_stopping])
-        # batch_size, epochs 조절해가면서 변화 확인
+        history = model.fit(X_train, y_train, batch_size=512, epochs=50, validation_data=(X_test, y_test), callbacks=[checkpoint, early_stopping])
+
         print("정확도 : %.4f" % (model.evaluate(X_test, y_test)[1]))
 
 
